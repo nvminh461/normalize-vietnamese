@@ -117,7 +117,7 @@ Normalizes text by converting to lowercase and removing special characters.
 ### Setup
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/nvminh461/normalize-vietnamese
 cd normalize-vietnamese
 npm install
 ```
