@@ -13,7 +13,10 @@ A TypeScript library for Vietnamese text processing including accent normalizati
 ## Installation
 
 ```bash
+# use npm
 npm install normalize-vietnamese
+# use yarn
+yarn add normalize-vietnamese
 ```
 
 ## Usage
