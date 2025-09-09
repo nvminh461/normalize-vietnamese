@@ -1,0 +1,56 @@
+{
+  "name": "normalize-vietnamese",
+  "version": "1.0.0",
+  "description": "A TypeScript library for Vietnamese text processing including accent normalization, text masking, and string utilities",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist/**/*",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "prepublishOnly": "npm run build",
+    "clean": "rm -rf dist"
+  },
+  "keywords": [
+    "vietnamese",
+    "accent",
+    "normalize",
+    "string",
+    "text-processing",
+    "typescript",
+    "utility"
+  ],
+  "author": {
+    "name": "Hip Nguyen",
+    "email": "nvminh04@gmail.com"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nvminh461/normalize-vietnamese.git"
+  },
+  "bugs": {
+    "url": "https://github.com/nvminh461/normalize-vietnamese/issues"
+  },
+  "homepage": "https://github.com/nvminh461/normalize-vietnamese#readme",
+  "devDependencies": {
+    "@types/jest": "^29.5.5",
+    "@types/node": "^20.6.3",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.1.1",
+    "typescript": "^5.2.2"
+  },
+  "dependencies": {
+    "slugify": "^1.6.6"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}
