@@ -1,6 +1,6 @@
 {
   "name": "normalize-vietnamese",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A TypeScript library for Vietnamese text processing including accent normalization, text masking, and string utilities",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
