@@ -101,56 +101,18 @@ export default class Str {
       return data ? data.marks[mark] : base;
     };
 
-    const correctWord = (word: string): string => {
-      const chars = [];
-
-      // Special consonant clusters that should be treated as single consonants
-      const specialConsonants = ["gi", "qu"];
-      let accentIndex = -1;
-
-      for (let i = 0; i < word.length; i++) {
-        const char = word[i];
-        const { base, mark } = extractAccent(char);
-
-        // Check if this is part of a special consonant cluster
-        let isSpecialConsonant = false;
-        for (const special of specialConsonants) {
-          if (i < word.length - 1) {
-            const nextChar = extractAccent(word[i + 1]);
-            const currentPair =
-              char.toLowerCase() + nextChar.base.toLowerCase();
-            if (currentPair === special && word.length > 2) {
-              isSpecialConsonant = true;
-              // Skip the next character as it's part of the consonant cluster
-              chars.push(word[i] + nextChar.base);
-              i++;
-
-              if (nextChar.mark !== -1) {
-                accentIndex = nextChar.mark;
-              }
-              break;
-            }
-          }
-        }
-
-        if (!isSpecialConsonant) {
-          if (accentMap[base] || accentMap[base.toLowerCase()]) {
-            chars.push(
-              applyAccent(base, accentIndex !== -1 ? accentIndex : mark)
-            );
-          } else {
-            chars.push(base);
-          }
-        }
-      }
-
-      return chars.join("");
+    // Function to check if word has final consonant
+    const hasFinalConsonant = (word: string): boolean => {
+      const lastChar = word[word.length - 1];
+      const { base } = extractAccent(lastChar);
+      return !accentMap[base] && !accentMap[base.toLowerCase()];
     };
 
-    // Function to find vowels in a word, considering special consonant clusters
-    const findVowels = (
-      word: string
-    ): Array<{ char: string; index: number; accent: number }> => {
+    // Function to normalize accent for a word
+    const normalizeWord = (word: string): string => {
+      // Correct accent on "gi" and "qu"
+      const correctChars = [];
+
       const vowels: Array<{
         char: string;
         index: number;
@@ -159,21 +121,28 @@ export default class Str {
 
       // Special consonant clusters that should be treated as single consonants
       const specialConsonants = ["gi", "qu"];
+      let accentIndex = -1;
 
       for (let i = 0; i < word.length; i++) {
         const char = word[i];
         const { base, mark } = extractAccent(char);
-
-        // Check if this is part of a special consonant cluster
         let isSpecialConsonant = false;
-        for (const special of specialConsonants) {
-          if (i < word.length - 1) {
-            const nextChar = extractAccent(word[i + 1].toLowerCase());
-            const currentPair = char.toLowerCase() + nextChar.base;
-            if (currentPair === special && word.length > 2) {
+
+        if (i === 0 && word.length > 2) {
+          // Check if this is part of a special consonant cluster "gi" and "qu"
+          const nextChar = extractAccent(word[i + 1]);
+          const currentPair = char + nextChar.base;
+
+          for (const special of specialConsonants) {
+            if (currentPair.toLowerCase() === special) {
               isSpecialConsonant = true;
               // Skip the next character as it's part of the consonant cluster
+              correctChars.push(currentPair);
               i++;
+
+              if (nextChar.mark !== -1) {
+                accentIndex = nextChar.mark;
+              }
               break;
             }
           }
@@ -187,23 +156,18 @@ export default class Str {
               index: i,
               accent: mark,
             });
+            correctChars.push(
+              applyAccent(base, accentIndex !== -1 ? accentIndex : mark)
+            );
+            accentIndex = -1;
+          } else {
+            correctChars.push(base);
           }
         }
       }
-      return vowels;
-    };
 
-    // Function to check if word has final consonant
-    const hasFinalConsonant = (word: string): boolean => {
-      const lastChar = word[word.length - 1];
-      const { base } = extractAccent(lastChar);
-      return !accentMap[base] && !accentMap[base.toLowerCase()];
-    };
+      const correctedWord = correctChars.join("");
 
-    // Function to normalize accent for a word
-    const normalizeWord = (word: string): string => {
-      const correctedWord = correctWord(word);
-      const vowels = findVowels(correctedWord);
       if (vowels.length === 0) return correctedWord;
 
       // Find the accent mark to preserve
@@ -279,10 +243,10 @@ export default class Str {
     // Split text into words and normalize each word
     return text
       .normalize("NFC")
-      .split(/(\s+)/)
+      .split(/(\s+|\p{P}+)/u)
       .map((part) => {
         // Only process non-whitespace parts
-        if (/\s/.test(part)) {
+        if (/\s|\p{P}/u.test(part)) {
           return part;
         }
         return normalizeWord(part);
